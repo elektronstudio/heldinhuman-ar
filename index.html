@@ -30,7 +30,7 @@
         return Array.from({ length }).map((_, i) => from + i * step);
       };
       const data = reactive({ z: -10, message: "Hello", items: [] });
-      data.items = Array.from({ length: 4 }).map((_) => ({
+      data.items = Array.from({ length: 100 }).map((_) => ({
         value: any(["all the\npeople"]),
         angle: random(-180, 180),
         distance: random(-5, -15),
