@@ -70,10 +70,11 @@
       </a-assets>
       <a-light type="point" color="white" position="0 0 0"></a-light>
       <a-entity
-        text-geometry="value: Word"
-        :position="{x: -1, y: 0, z: -10}"
-        :rotation="{x: 0, y: -50, z: 0}"
+        :text-geometry="{value: 'Please\nremember\nme'}"
+        :position="{x: -1, y: 2, z: -15}"
+        :rotation="{x: 0, y: -30, z: 0}"
         scale="3 3 3"
+        material="color: white"
       ></a-entity>
       <a-entity
         v-for="item,i in data.items"
