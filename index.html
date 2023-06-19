@@ -10,30 +10,40 @@
     <script src="https://unpkg.com/reconnecting-websocket@4.4.0/dist/reconnecting-websocket-iife.min.js"></script>
 
     <script type="module">
-            import { createApp, reactive } from "https://unpkg.com/petite-vue?module";
-            const pol2car = (a, r) => {
-              return {
-                x: Math.cos((a - 90) * (Math.PI / 180)) * r,
-                y: Math.sin((a - 90) * (Math.PI / 180)) * r,
-              };
-            };
-            const random = (from = 0, to = 1) => from + Math.random() * (to - from);
-            const randomInt = (min = 0, max = 1) => Math.floor(random(min, max)
-      }
-            const range = (from, to, step = 1) => {
-              const length = Math.floor((to - from) / step) + 1;
-              return Array.from({ length }).map((_, i) => from + i * step);
-            };
-            const data = reactive({ z: -10, message: "Hello" });
-            createApp({ data, range }).mount();
+      import { createApp, reactive } from "https://unpkg.com/petite-vue?module";
+      const pol2car = (a, r) => {
+        return {
+          x: Math.cos((a - 90) * (Math.PI / 180)) * r,
+          y: Math.sin((a - 90) * (Math.PI / 180)) * r,
+        };
+      };
+      const random = (from = 0, to = 1) => from + Math.random() * (to - from);
+      const randomInt = (min = 0, max = 1) => Math.floor(random(min, max));
 
-            const socket = new WebSocket("wss://data.elektron.art");
-            socket.addEventListener("message", (event) => {
-              const message = JSON.parse(event.data);
-              if (message.channel == "amfr") {
-                data.message = message.value;
-              }
-            });
+      const range = (from, to, step = 1) => {
+        const length = Math.floor((to - from) / step) + 1;
+        return Array.from({ length }).map((_, i) => from + i * step);
+      };
+      const data = reactive({ z: -10, message: "Hello", items: [] });
+      data.items = [
+        { value: "Hello", angle: random(0, 360), distance: random(5, 15) },
+        { value: "World", angle: random(0, 360), distance: random(5, 15) },
+      ];
+
+      createApp({ data, range }).mount();
+
+      const socket = new WebSocket("wss://data.elektron.art");
+      socket.addEventListener("message", (event) => {
+        const message = JSON.parse(event.data);
+        if (message.channel == "amfr") {
+          const item = {
+            value: message.value,
+            angle: random(0, 360),
+            distance: random(5, 15),
+          };
+          data.items.push(item);
+        }
+      });
     </script>
   </head>
 
@@ -43,8 +53,11 @@
       embedded
       arjs="sourceType: webcam; debugUIEnabled: false;"
     >
-      <a-entity v-for="a in range(-5,5)" :rotation="{x: 0, y: a * 10, z: 0 }">
-        <a-entity :position="{x: 0, y: 1.5, z: data.z }">
+      <a-entity
+        v-for="item,i in data.items"
+        :rotation="{x: 0, y: i * 10, z: 0 }"
+      >
+        <a-entity :position="{x: 0, y: 1.5, z: -10 }">
           <a-entity
             material="color: black; opacity: 0.5;"
             geometry="primitive: box; depth: 0.1; width: 2; height: 2"
@@ -54,7 +67,7 @@
           </a-entity>
           <a-entity
             position="1.75 0.7 1"
-            :text="{width: 5, lineHeight: 50, color: 'white', value: data.message}"
+            :text="{width: 5, lineHeight: 50, color: 'white', value: item.value}"
           >
           </a-entity>
         </a-entity>
