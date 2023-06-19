@@ -39,7 +39,7 @@
         tilt: random(-30, 30),
       }));
 
-      createApp({ data, range }).mount();
+      createApp({ data, fn: { random } }).mount();
 
       const socket = new WebSocket("wss://data.elektron.art");
       socket.addEventListener("message", (event) => {
@@ -71,11 +71,10 @@
       </a-assets>
       <a-light type="point" color="white" position="0 0 0"></a-light>
       <a-curve id="track1">
-        <a-curve-point position="-5 5 -3"></a-curve-point>
-        <a-curve-point position="2 -2 -4"></a-curve-point>
-        <a-curve-point position="3 4 -7"></a-curve-point>
-        <a-curve-point position="1 1 1"></a-curve-point>
-        <a-curve-point position="3 -3 -3"></a-curve-point>
+        <a-curve-point
+          v-for="i in 20"
+          :position="{x: fn.random(-3,3),y: fn.random(-3,3),z: fn.random(-3,3)}"
+        ></a-curve-point>
       </a-curve>
       <a-entity :position="{x: -1, y: 2, z: -15}">
         <a-draw-curve
