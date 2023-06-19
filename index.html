@@ -15,7 +15,7 @@
       const data = reactive({ z: -10, message: "" });
       createApp({ data }).mount();
 
-      const socket = new WebSocket("ws://data.elektron.art");
+      const socket = new WebSocket("wss://data.elektron.art");
       socket.addEventListener("message", (event) => {
         const message = JSON.parse(event.data);
         if (message.channel == "amfr") {
