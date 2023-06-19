@@ -32,11 +32,11 @@
         return Array.from({ length }).map((_, i) => from + i * step);
       };
       const data = reactive({ z: -10, message: "Hello", items: [] });
-      data.items = Array.from({ length: 10 }).map((_) => ({
+      data.items = Array.from({ length: 4 }).map((_) => ({
         value: any(["all the\npeople"]),
-        angle: random(-180, 180),
+        angle: random(-80, 80),
         distance: random(-5, -15),
-        tilt: random(-30, 30),
+        tilt: random(-10, 10),
       }));
 
       createApp({ data, fn: { random } }).mount();
