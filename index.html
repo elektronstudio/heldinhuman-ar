@@ -9,6 +9,7 @@
     <script src="https://unpkg.com/ar.js@2.2.2/aframe/build/aframe-ar.min.js"></script>
     <script src="https://unpkg.com/reconnecting-websocket@4.4.0/dist/reconnecting-websocket-iife.min.js"></script>
     <script src="https://unpkg.com/aframe-text-geometry-component@0.5.1/dist/aframe-text-geometry-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-curve-component/dist/aframe-curve-component.min.js"></script>
 
     <script type="module">
       import { createApp, reactive } from "https://unpkg.com/petite-vue?module";
@@ -69,6 +70,19 @@
         ></a-asset-item>
       </a-assets>
       <a-light type="point" color="white" position="0 0 0"></a-light>
+      <a-curve id="track1">
+        <a-curve-point position="-5 5 -3"></a-curve-point>
+        <a-curve-point position="2 -2 -4"></a-curve-point>
+        <a-curve-point position="3 4 -7"></a-curve-point>
+        <a-curve-point position="1 1 1"></a-curve-point>
+        <a-curve-point position="3 -3 -3"></a-curve-point>
+      </a-curve>
+      <a-entity :position="{x: -1, y: 2, z: -15}">
+        <a-draw-curve
+          curveref="#track1"
+          material="shader: line; color: red;"
+        ></a-draw-curve>
+      </a-entity>
       <a-entity
         :text-geometry="{value: 'Please\nremember\nme'}"
         :position="{x: -1, y: 2, z: -15}"
