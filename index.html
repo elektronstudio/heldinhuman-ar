@@ -74,6 +74,12 @@
           >
           </a-entity> -->
           <a-entity
+            v-for="i in 3"
+            position="1.75 0.7 0.9"
+            :text="{width: 5, lineHeight: 50, color: 'black', value: item.value}"
+          >
+          </a-entity>
+          <a-entity
             position="1.75 0.7 1"
             :text="{width: 5, lineHeight: 50, color: 'white', value: item.value}"
           >
