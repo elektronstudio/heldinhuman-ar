@@ -30,8 +30,8 @@
         return Array.from({ length }).map((_, i) => from + i * step);
       };
       const data = reactive({ z: -10, message: "Hello", items: [] });
-      data.items = Array.from({ length: 10 }).map((_) => ({
-        value: any(["when we were\nin love", "a strange noise", "me"]),
+      data.items = Array.from({ length: 4 }).map((_) => ({
+        value: any(["all the\npeople"]),
         angle: random(-180, 180),
         distance: random(-5, -15),
         tilt: random(-30, 30),
@@ -42,12 +42,9 @@
       const socket = new WebSocket("wss://data.elektron.art");
       socket.addEventListener("message", (event) => {
         const message = JSON.parse(event.data);
-        if (
-          message.channel == "amfr" &&
-          message.value.startsWith("/remember")
-        ) {
+        if (message.channel == "amfr" && message.value.startsWith("/imagine")) {
           const item = {
-            value: message.value.replace("/remember", ""),
+            value: message.value.replace("/imagine", ""),
             angle: random(0, 36),
             distance: random(-5, -15),
             tilt: random(-1, 1),
