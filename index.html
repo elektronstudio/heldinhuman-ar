@@ -35,7 +35,7 @@
 
       const data = reactive({ z: -10, message: "Hello", items: [] });
       data.items = Array.from({ length: 4 }).map((_) => ({
-        value: any(["Я даже не знаю\nここに何を書けば"]),
+        value: any(["all is love"]),
         angle: random(-80, 80),
         distance: random(-5, -15),
         tilt: random(-10, 10),
@@ -78,7 +78,7 @@
       "
     >
       <div style="font-size: 150px; text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5)">
-        {{ item.value }}
+        Remember {{ item.value }}
       </div>
     </div>
     <a-scene
@@ -106,7 +106,7 @@
         ></a-draw-curve>
       </a-entity> -->
       <a-entity
-        :text-geometry="{value: 'Please\nremember\nme'}"
+        :text-geometry="{value: 'Remember'}"
         :position="{x: -1, y: 2, z: -10}"
         :rotation="{x: 0, y: -30, z: 0}"
         scale="3 3 3"
