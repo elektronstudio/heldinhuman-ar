@@ -78,7 +78,7 @@
       "
     >
       <div style="font-size: 150px; text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5)">
-        Remember {{ item.value }}
+        Remember {{ item.value.replace('/remember','').trim() }}
       </div>
     </div>
     <a-scene
