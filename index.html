@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/reconnecting-websocket@4.4.0/dist/reconnecting-websocket-iife.min.js"></script>
     <script src="https://unpkg.com/aframe-text-geometry-component@0.5.1/dist/aframe-text-geometry-component.min.js"></script>
     <script src="https://unpkg.com/aframe-curve-component/dist/aframe-curve-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-html-shader@0.2.0/dist/aframe-html-shader.min.js"></script>
 
     <script type="module">
       import { createApp, reactive } from "https://unpkg.com/petite-vue?module";
@@ -31,37 +32,23 @@
         const length = Math.floor((to - from) / step) + 1;
         return Array.from({ length }).map((_, i) => from + i * step);
       };
-      const replace = (str) =>
-        str
-          .replace(/Õ/g, "6")
-          .replace(/Ä/g, "2")
-          .replace(/Ö/g, "8")
-          .replace(/Ü/g, "y")
-          .replace(/Š/g, "Sh")
-          .replace(/Ž/g, "Zh")
-          .replace(/õ/g, "6")
-          .replace(/ä/g, "2")
-          .replace(/ö/g, "8")
-          .replace(/ü/g, "y")
-          .replace(/š/g, "sh")
-          .replace(/ž/g, "zh");
 
       const data = reactive({ z: -10, message: "Hello", items: [] });
       data.items = Array.from({ length: 4 }).map((_) => ({
-        value: any(["õnn tuleb meie\nžetoonile"]),
+        value: any(["Я даже не знаю\nここに何を書けば"]),
         angle: random(-80, 80),
         distance: random(-5, -15),
         tilt: random(-10, 10),
       }));
 
-      createApp({ data, fn: { random, replace } }).mount();
+      createApp({ data, fn: { random } }).mount();
 
       const socket = new WebSocket("wss://data.elektron.art");
       socket.addEventListener("message", (event) => {
         const message = JSON.parse(event.data);
         if (message.channel == "amfr" && message.value.startsWith("/imagine")) {
           const item = {
-            value: message.value.replace("/imagine", ""),
+            value: message.value,
             angle: random(0, 36),
             distance: random(-5, -15),
             tilt: random(-1, 1),
@@ -73,6 +60,24 @@
   </head>
 
   <body style="margin: 0; overflow: hidden">
+    <div
+      v-for="item,i in data.items"
+      :id="'htmlElement' + i"
+      style="
+        width: 1000px;
+        height: 2000px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        overflow: hidden;
+        z-index: -100;
+        pointer-events: none;
+      "
+    >
+      <div style="font-size: 150px; text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5)">
+        {{ item.value }}
+      </div>
+    </div>
     <a-scene
       vr-mode-ui="enabled: false"
       embedded
@@ -99,7 +104,7 @@
       </a-entity> -->
       <a-entity
         :text-geometry="{value: 'Please\nremember\nme'}"
-        :position="{x: -1, y: 2, z: -15}"
+        :position="{x: -1, y: 2, z: -10}"
         :rotation="{x: 0, y: -30, z: 0}"
         scale="3 3 3"
         material="color: white"
@@ -109,14 +114,12 @@
         :rotation="{x: item.tilt, y: item.angle * 10, z: 0 }"
       >
         <a-entity :position="{x: 0, y: 1.5, z: item.distance }">
+          <a-plane
+            width="2"
+            height="4"
+            :material="{shader: 'html', target: '#htmlElement' + i, transparent: true}"
+          ></a-plane>
           <!-- <a-entity
-            material="color: black; opacity: 0.5;"
-            geometry="primitive: box; depth: 0.1; width: 2; height: 2"
-            position="0 0 0"
-            opacity="0.5"
-          >
-          </a-entity> -->
-          <a-entity
             v-for="i in 3"
             position="1.75 0.7 0.9"
             :text="{width: 5, lineHeight: 50, color: 'black', value: fn.replace(item.value)}"
@@ -126,7 +129,7 @@
             position="1.75 0.7 1"
             :text="{width: 5, lineHeight: 50, color: 'white', value: fn.replace(item.value)}"
           >
-          </a-entity>
+          </a-entity> -->
         </a-entity>
       </a-entity>
     </a-scene>
