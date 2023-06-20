@@ -119,10 +119,11 @@
         ></a-draw-curve>
       </a-entity> -->
       <a-entity
-        :text-geometry="{value: 'Remember'}"
-        :position="{x: -1, y: 0, z: -10}"
-        :rotation="{x: 0, y: -30, z: 0}"
-        scale="3 3 3"
+        v-for="letter,i in 'Remember'.split('')"
+        :text-geometry="{value: letter}"
+        :position="{x: (i * 2.5 - 10) + fn.random(-0.25,0.25), y: 0, z: fn.random(-8,-11)}"
+        :rotation="{x: 0, y: fn.random(-30,30), z: 0}"
+        scale="5 5 5"
         material="color: white"
       ></a-entity>
       <a-entity
