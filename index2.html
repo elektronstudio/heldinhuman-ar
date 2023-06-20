@@ -31,6 +31,12 @@
         const length = Math.floor((to - from) / step) + 1;
         return Array.from({ length }).map((_, i) => from + i * step);
       };
+
+      const m =
+        "The bräd narrative  of Hitchhiker  föllows the misõdventures  of the löst surviving  man, Arthur Dent,  following the demolition  of the Earth  by a Vogon constructor  fleet to make  way for a hyperspace  bypass. Dent is  rescued from Earth's  destruction by Ford  Prefect—a human-like  alien writer  for the eccentric,  electronic travel  guide The Hitchhiker's  Guide to the Galaxy—by  hitchhiking onto  a passing Vogon  spacecraft. Following  his rescue, Dent  explores the galaxy  with Prefect and  encounters Trillian,  another human  who had been taken  from Earth (before  its destruction)  by the two-headed  President of the Galaxy  Zaphod Beeblebrox  and the depressed Marvin,  the Paranoid Android.  Certain narrative  details were changed  among the various  adaptations.".split(
+          "  "
+        );
+
       const replace = (str) =>
         str
           .replace(/Õ/g, "6")
@@ -42,9 +48,8 @@
           .replace(/ö/g, "8")
           .replace(/ü/g, "y");
 
-      const data = reactive({ z: -10, message: "Hello", items: [] });
+      const data = reactive({ z: -10, message: "Hello", items: [], m });
       data.items = Array.from({ length: 4 }).map((_) => ({
-        value: any(["õnn tuleb meie\nõuele"]),
         angle: random(-80, 80),
         distance: random(-5, -15),
         tilt: random(-10, 10),
@@ -93,18 +98,15 @@
           material="shader: line; color: red;"
         ></a-draw-curve>
       </a-entity> -->
-      <a-entity
+      <!-- <a-entity
         :text-geometry="{value: 'Please\nremember\nme'}"
         :position="{x: -1, y: 2, z: -15}"
         :rotation="{x: 0, y: -30, z: 0}"
         scale="3 3 3"
         material="color: white"
-      ></a-entity>
-      <a-entity
-        v-for="item,i in data.items"
-        :rotation="{x: item.tilt, y: item.angle * 10, z: 0 }"
-      >
-        <a-entity :position="{x: 0, y: 1.5, z: item.distance }">
+      ></a-entity> -->
+      <a-entity v-for="item,i in 20" :rotation="{x: 0, y: 0, z: 0 }">
+        <a-entity :position="{x: (i - 10) * 1.5, y: 1.5, z: -10 }">
           <!-- <a-entity
             material="color: black; opacity: 0.5;"
             geometry="primitive: box; depth: 0.1; width: 2; height: 2"
@@ -113,14 +115,8 @@
           >
           </a-entity> -->
           <a-entity
-            v-for="i in 3"
-            position="1.75 0.7 0.9"
-            :text="{width: 5, lineHeight: 50, color: 'black', value: fn.replace(item.value)}"
-          >
-          </a-entity>
-          <a-entity
             position="1.75 0.7 1"
-            :text="{width: 5, lineHeight: 50, color: 'white', value: fn.replace(item.value)}"
+            :text="{anchor: 'left', baseline: 'top', width: 3, lineHeight: 50, color: 'white', value: fn.replace(data.m.slice(0,i + 1).join('\n'))}"
           >
           </a-entity>
         </a-entity>
