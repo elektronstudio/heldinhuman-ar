@@ -37,14 +37,18 @@
           .replace(/Ä/g, "2")
           .replace(/Ö/g, "8")
           .replace(/Ü/g, "y")
+          .replace(/Š/g, "Sh")
+          .replace(/Ž/g, "Zh")
           .replace(/õ/g, "6")
           .replace(/ä/g, "2")
           .replace(/ö/g, "8")
-          .replace(/ü/g, "y");
+          .replace(/ü/g, "y")
+          .replace(/š/g, "sh")
+          .replace(/ž/g, "zh");
 
       const data = reactive({ z: -10, message: "Hello", items: [] });
       data.items = Array.from({ length: 4 }).map((_) => ({
-        value: any(["õnn tuleb meie\nõuele"]),
+        value: any(["õnn tuleb meie\nžetoonile"]),
         angle: random(-80, 80),
         distance: random(-5, -15),
         tilt: random(-10, 10),
