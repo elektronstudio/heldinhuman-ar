@@ -46,7 +46,10 @@
       const socket = new WebSocket("wss://data.elektron.art");
       socket.addEventListener("message", (event) => {
         const message = JSON.parse(event.data);
-        if (message.channel == "amfr" && message.value.startsWith("/imagine")) {
+        if (
+          message.channel == "amfr" &&
+          message.value.startsWith("/remember")
+        ) {
           const item = {
             value: message.value,
             angle: random(0, 36),
