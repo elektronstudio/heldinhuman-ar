@@ -47,7 +47,7 @@
           .replace(/ž/g, "zh");
 
       const data = reactive({ z: -10, message: "Hello", items: [] });
-      data.items = Array.from({ length: 10 }).map((_) => ({
+      data.items = Array.from({ length: 20 }).map((_) => ({
         value: any(["to bring\nthe milk\nand drink it"]),
         angle: random(-80, 80),
         distance: random(-5, -15),
