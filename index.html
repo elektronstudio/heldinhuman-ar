@@ -118,13 +118,15 @@
           material="shader: line; color: red;"
         ></a-draw-curve>
       </a-entity> -->
-      <a-entity
-        v-for="letter,i in 'Remember'.split('')"
-        :text-geometry="{value: letter}"
-        :position="{x: (i * 2.5 - 10) + fn.random(-0.25,0.25), y: -2, z: fn.random(-8,-11)}"
-        :rotation="{x: 0, y: fn.random(-30,30), z: 0}"
-        scale="5 5 5"
-        material="color: white"
+      <a-entity :position="{x: 0, y: -5, z: -10 }">
+        <a-entity
+          v-for="letter,i in 'Remember'.split('')"
+          :text-geometry="{value: letter}"
+          :position="{x: (i * 2.5 - 10) + fn.random(-0.25,0.25), y: -2, z: fn.random(-14,-16)}"
+          :rotation="{x: 0, y: fn.random(-30,30), z: 0}"
+          scale="5 5 5"
+          material="color: white"
+        ></a-entity
       ></a-entity>
       <a-entity
         v-for="item,i in data.items"
