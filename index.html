@@ -47,12 +47,22 @@
           .replace(/ž/g, "zh");
 
       const data = reactive({ z: -10, message: "Hello", items: [] });
-      data.items = Array.from({ length: 20 }).map((_) => ({
-        value: any(["to bring\nthe milk\nand drink it"]),
-        angle: random(-80, 80),
-        distance: random(-5, -15),
-        tilt: random(-10, 10),
-      }));
+      const channel = "amfr";
+      const url =
+        "https://data.elektron.art/api/messages?sort[0]=datetime%3Aasc&filters[type][$eq]=CHAT&filters[channel][$eq]=" +
+        channel;
+
+      fetch(url)
+        .then((res) => res.json())
+        .then(({ data: historicData }) => {
+          console.log(data);
+          data.items = historicData.map(({ attributes: d }) => ({
+            value: d.value,
+            angle: random(-10, 10),
+            distance: random(-5, -15),
+            tilt: random(-10, 10),
+          }));
+        });
 
       createApp({ data, fn: { random, replace } }).mount();
 
