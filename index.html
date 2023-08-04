@@ -63,7 +63,7 @@
           data.items = historicData.map(({ attributes: d }) => ({
             value: d.value,
             angle: random(-30, 30),
-            distance: random(-5, -15),
+            distance: random(-7, -15),
             tilt: random(-10, 10),
           }));
         });
@@ -81,7 +81,7 @@
             value: message.value.replace("/remember", ""),
             angle: random(0, 36),
             distance: random(-5, -15),
-            tilt: random(-1, 1),
+            tilt: random(-1, 10),
           };
           data.items.push(item);
         }
@@ -144,9 +144,11 @@
       ></a-entity> -->
       <a-entity
         v-for="item,i in data.items"
-        :rotation="{x: item.tilt, y: item.angle * 10, z: 0 }"
+        :rotation="{x: item.tilt, y: item.angle * 100, z: 0 }"
       >
-        <a-entity :position="{x: 0, y: 1.5, z: item.distance }">
+        <a-entity
+          :position="{x: 0, y: 1.5, z: i === (data.items.length - 1) ? -6 : item.distance }"
+        >
           <!-- <a-entity
             material="color: black; opacity: 0.5;"
             geometry="primitive: box; depth: 0.1; width: 2; height: 2"
@@ -160,7 +162,7 @@
           > 
           </a-entity>-->
           <a-entity
-            position="1.75 0.7 1"
+            :position="{x: 1.75,y: 0.7,z: 1}"
             :text="{opacity: fn.remap(i,0,data.items.length -1, 0,0.7), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: 'Remember ' + fn.replace(item.value)}"
           >
           </a-entity>
