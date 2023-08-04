@@ -46,6 +46,11 @@
           .replace(/š/g, "sh")
           .replace(/ž/g, "zh");
 
+      const remap = (value, start1, stop1, start2, stop2) => {
+        return (
+          ((value - start1) / (stop1 - start1)) * (stop2 - start2) + start2
+        );
+      };
       const data = reactive({ z: -10, message: "Hello", items: [] });
       const channel = "amfr";
       const url =
@@ -55,16 +60,15 @@
       fetch(url)
         .then((res) => res.json())
         .then(({ data: historicData }) => {
-          console.log(data);
           data.items = historicData.map(({ attributes: d }) => ({
             value: d.value,
-            angle: random(-10, 10),
+            angle: random(-30, 30),
             distance: random(-5, -15),
             tilt: random(-10, 10),
           }));
         });
 
-      createApp({ data, fn: { random, replace } }).mount();
+      createApp({ data, fn: { random, replace, remap } }).mount();
 
       const socket = new WebSocket("wss://data.elektron.art");
       socket.addEventListener("message", (event) => {
@@ -128,7 +132,7 @@
           material="shader: line; color: red;"
         ></a-draw-curve>
       </a-entity> -->
-      <a-entity :position="{x: 0, y: -5, z: -10 }">
+      <!-- <a-entity :position="{x: 0, y: -5, z: -10 }">
         <a-entity
           v-for="letter,i in 'Remember'.split('')"
           :text-geometry="{value: letter}"
@@ -137,7 +141,7 @@
           scale="5 5 5"
           material="color: white"
         ></a-entity
-      ></a-entity>
+      ></a-entity> -->
       <a-entity
         v-for="item,i in data.items"
         :rotation="{x: item.tilt, y: item.angle * 10, z: 0 }"
@@ -150,15 +154,14 @@
             opacity="0.5"
           >
           </a-entity> -->
-          <a-entity
-            v-for="i in 3"
-            position="1.75 0.7 0.9"
-            :text="{width: 5, lineHeight: 50, color: 'black', value: 'Remember ' + fn.replace(item.value)}"
-          >
-          </a-entity>
+          <!-- <a-entity
+            position="1.75 0.7 0.95"
+            :text="{opacity: 0.2,width: 5, lineHeight: 50, color: 'black', value: 'Remember ' + fn.replace(item.value)}"
+          > 
+          </a-entity>-->
           <a-entity
             position="1.75 0.7 1"
-            :text="{width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: 'Remember ' + fn.replace(item.value)}"
+            :text="{opacity: fn.remap(i,0,data.items.length -1, 0,0.7), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: 'Remember ' + fn.replace(item.value)}"
           >
           </a-entity>
         </a-entity>
