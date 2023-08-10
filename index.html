@@ -57,11 +57,21 @@
         "https://data.elektron.art/api/messages?sort[0]=datetime%3Aasc&filters[type][$eq]=CHAT&filters[channel][$eq]=" +
         channel;
 
+      const replaceValue = (value) => {
+        if (value.startsWith("/whisper")) {
+          return "Remember " + value.replace("/whisper", "");
+        }
+        if (value.startsWith("/imagine")) {
+          return "Remember " + value.replace("/imagine", "");
+        }
+        return null;
+      };
+
       fetch(url)
         .then((res) => res.json())
         .then(({ data: historicData }) => {
           data.items = historicData.map(({ attributes: d }) => ({
-            value: d.value,
+            value: replaceValue(d.value),
             angle: random(-30, 30),
             distance: random(-7, -15),
             tilt: random(-10, 10),
@@ -73,17 +83,17 @@
       const socket = new WebSocket("wss://data.elektron.art");
       socket.addEventListener("message", (event) => {
         const message = JSON.parse(event.data);
-        if (
-          message.channel == "amfr" &&
-          message.value.startsWith("/remember")
-        ) {
-          const item = {
-            value: message.value.replace("/remember", ""),
-            angle: random(0, 36),
-            distance: random(-5, -15),
-            tilt: random(-1, 10),
-          };
-          data.items.push(item);
+        if (message.channel == "amfr") {
+          const value = replaceValue(message.value);
+          if (value) {
+            const item = {
+              value,
+              angle: random(0, 36),
+              distance: random(-5, -15),
+              tilt: random(-1, 10),
+            };
+            data.items.push(item);
+          }
         }
       });
     </script>
@@ -163,7 +173,7 @@
           </a-entity>-->
           <a-entity
             :position="{x: 1.75,y: 0.7,z: 1}"
-            :text="{opacity: fn.remap(i,0,data.items.length -1, 0,0.7), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: 'Remember ' + fn.replace(item.value)}"
+            :text="{opacity: fn.remap(i,0,data.items.length -1, 0,0.7), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: fn.replace(item.value)}"
           >
           </a-entity>
         </a-entity>
