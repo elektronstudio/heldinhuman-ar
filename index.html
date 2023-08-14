@@ -51,7 +51,12 @@
           ((value - start1) / (stop1 - start1)) * (stop2 - start2) + start2
         );
       };
-      const data = reactive({ z: -10, message: "Hello", items: [] });
+      const data = reactive({
+        zoom: 0,
+        maxZoom: 25,
+        message: "Hello",
+        items: [],
+      });
       const channel = "amfr";
       const url =
         "https://data.elektron.art/api/messages?sort[0]=datetime%3Aasc&filters[type][$eq]=CHAT&filters[channel][$eq]=" +
@@ -153,33 +158,48 @@
           material="color: white"
         ></a-entity
       ></a-entity> -->
-      <a-entity
-        v-for="item,i in data.items"
-        :rotation="{x: item.tilt, y: item.angle * 100, z: 0 }"
-      >
+      <a-entity :position="{x: 0, y: data.zoom * -1, z: 0}">
         <a-entity
-          :position="{x: 0, y: item.height, z: i === (data.items.length - 1) ? -6 : item.distance }"
+          v-for="item,i in data.items"
+          :rotation="{x: item.tilt, y: item.angle * 100, z: 0 }"
         >
-          <!-- <a-entity
+          <a-entity
+            :position="{x: 0, y: item.height, z: i === (data.items.length - 1) ? -6 : item.distance }"
+          >
+            <!-- <a-entity
             material="color: black; opacity: 0.5;"
             geometry="primitive: box; depth: 0.1; width: 2; height: 2"
             position="0 0 0"
             opacity="0.5"
           >
           </a-entity> -->
-          <!-- <a-entity
+            <!-- <a-entity
             position="1.75 0.7 0.95"
             :text="{opacity: 0.2,width: 5, lineHeight: 50, color: 'black', value: '' + fn.replace(item.value)}"
           > 
           </a-entity>-->
-          <a-entity
-            :position="{x: 1.75,y: 0.7,z: 1}"
-            :text="{opacity: fn.remap(i,0,data.items.length -1, 0.9,0.9), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: fn.replace(item.value)}"
-          >
+            <a-entity
+              :position="{x: 1.75,y: 0.7,z: 1}"
+              :text="{opacity: fn.remap(i,0,data.items.length -1, 0.9,0.9), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: fn.replace(item.value)}"
+            >
+            </a-entity>
           </a-entity>
         </a-entity>
       </a-entity>
     </a-scene>
+    <input
+      type="range"
+      v-model="data.zoom"
+      :max="data.maxZoom"
+      step="any"
+      style="
+        position: fixed;
+        bottom: 15px;
+        left: 15px;
+        right: 15px;
+        display: block;
+      "
+    />
   </body>
 
   <style>
