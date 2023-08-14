@@ -73,9 +73,9 @@
           data.items = historicData.map(({ attributes: d }) => ({
             value: replaceValue(d.value),
             angle: random(-180, 180),
-            distance: random(-4, -4),
+            distance: random(-4, -5),
             tilt: random(-1, 1),
-            height: random(1.5, 20),
+            height: random(0.5, 40),
           }));
         });
 
@@ -174,7 +174,7 @@
           </a-entity>-->
           <a-entity
             :position="{x: 1.75,y: 0.7,z: 1}"
-            :text="{opacity: fn.remap(i,0,data.items.length -1, 0,0.7), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: fn.replace(item.value)}"
+            :text="{opacity: fn.remap(i,0,data.items.length -1, 0.9,0.9), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: fn.replace(item.value)}"
           >
           </a-entity>
         </a-entity>
