@@ -72,9 +72,10 @@
         .then(({ data: historicData }) => {
           data.items = historicData.map(({ attributes: d }) => ({
             value: replaceValue(d.value),
-            angle: random(-30, 30),
-            distance: random(-7, -15),
-            tilt: random(-10, 10),
+            angle: random(-180, 180),
+            distance: random(-4, -4),
+            tilt: random(-1, 1),
+            height: random(1.5, 20),
           }));
         });
 
@@ -157,7 +158,7 @@
         :rotation="{x: item.tilt, y: item.angle * 100, z: 0 }"
       >
         <a-entity
-          :position="{x: 0, y: 1.5, z: i === (data.items.length - 1) ? -6 : item.distance }"
+          :position="{x: 0, y: item.height, z: i === (data.items.length - 1) ? -6 : item.distance }"
         >
           <!-- <a-entity
             material="color: black; opacity: 0.5;"
