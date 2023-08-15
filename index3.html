@@ -81,7 +81,7 @@
         rotation: "0 0 0",
         zoom: 0,
         maxZoom: 100,
-        message: "Hello",
+        latestMessage: "Hello",
         items: [],
       });
       const channel = "amfr";
@@ -122,6 +122,7 @@
         const message = JSON.parse(event.data);
         if (message.channel == "amfr") {
           const value = replaceValue(message.value);
+          data.latestMessage = value;
           if (value) {
             const item = {
               value,
@@ -169,7 +170,7 @@
         >
           <a-entity
             :position="{x: 1.75,y: 0.7,z: 1}"
-            :text="{opacity: 1, width: 5, lineHeight: 50, color: 'yellow', value: 'Hello world'}"
+            :text="{opacity: 1, width: 5, lineHeight: 50, color: 'yellow', value: data.latestMessage}"
           >
           </a-entity>
         </a-entity>
