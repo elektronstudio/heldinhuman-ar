@@ -81,7 +81,7 @@
         rotation: "0 0 0",
         zoom: 0,
         maxZoom: 100,
-        latestMessage: "Hello",
+        latestMessage: "...",
         items: [],
       });
       const channel = "amfr";
@@ -96,7 +96,10 @@
         if (value.startsWith("/imagine")) {
           return "Remember " + value.replace("/imagine", "");
         }
-        return value;
+        if (value.startsWith("/q")) {
+          return null;
+        }
+        return value.replace("/remember", "");
       };
 
       const randomValues = () => {
