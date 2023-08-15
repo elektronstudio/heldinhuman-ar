@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <style>
+      body {
+        color: white;
+        font-family: sans-serif;
+      }
+      input[type="range"] {
+        display: block;
+        -webkit-appearance: none;
+        background-color: rgba(255, 255, 255, 0.7);
+        height: 1px;
+        position: relative;
+        outline: none;
+        width: 100%;
+        margin: 16px 0;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        background-color: rgba(255, 255, 255, 0.7);
+        height: 32px;
+        width: 32px;
+        border-radius: 1000px;
+        background: white;
+        cursor: pointer;
+      }
+    </style>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -75,10 +100,9 @@
 
       const randomValues = () => {
         return {
-          angle: random(-180, 180),
-          distance: random(-4, -5),
-          tilt: random(-1, 1),
-          height: random(0, 30),
+          yAngle: random(-180, 180),
+          yPosition: random(10, 10),
+          zPosition: random(-4, -5),
         };
       };
 
@@ -129,14 +153,12 @@
       >
         <a-entity
           v-for="item,i in data.items"
-          :rotation="{x: 0, y: item.angle * 100, z: 0 }"
+          :rotation="{x: 0, y: item.yAngle, z: 0 }"
         >
-          <a-entity
-            :position="{x: 0, y: item.height, z: i === (data.items.length - 1) ? -6 : item.distance }"
-          >
+          <a-entity :position="{x: 0, y: item.yPosition, z: item.zPosition }">
             <a-entity
               :position="{x: 1.75,y: 0.7,z: 1}"
-              :text="{opacity: fn.remap(i,0,data.items.length -1, 0.9,0.9), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: fn.replace(item.value)}"
+              :text="{opacity: fn.remap(i,0,data.items.length -1, 0.9,0.9), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: i}"
             >
             </a-entity>
           </a-entity>
@@ -171,30 +193,4 @@
       "
     />
   </body>
-
-  <style>
-    body {
-      color: white;
-      font-family: sans-serif;
-    }
-    input[type="range"] {
-      display: block;
-      -webkit-appearance: none;
-      background-color: rgba(255, 255, 255, 0.7);
-      height: 1px;
-      position: relative;
-      outline: none;
-      width: 100%;
-      margin: 16px 0;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      background-color: rgba(255, 255, 255, 0.7);
-      height: 32px;
-      width: 32px;
-      border-radius: 1000px;
-      background: white;
-      cursor: pointer;
-    }
-  </style>
 </html>
