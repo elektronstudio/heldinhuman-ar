@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/es-module-shims@1.7.1/dist/es-module-shims.js"></script>
+    <script src="https://unpkg.com/aframe@1.0.4/dist/aframe-v1.0.4.min.js"></script>
+    <script src="https://unpkg.com/ar.js@2.2.2/aframe/build/aframe-ar.min.js"></script>
+    <script src="https://unpkg.com/reconnecting-websocket@4.4.0/dist/reconnecting-websocket-iife.min.js"></script>
+    <script src="https://unpkg.com/aframe-text-geometry-component@0.5.1/dist/aframe-text-geometry-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-curve-component/dist/aframe-curve-component.min.js"></script>
+
+    <script type="module">
+      import { createApp, reactive } from "https://unpkg.com/petite-vue?module";
+      const pol2car = (a, r) => {
+        return {
+          x: Math.cos((a - 90) * (Math.PI / 180)) * r,
+          y: Math.sin((a - 90) * (Math.PI / 180)) * r,
+        };
+      };
+      const shuffle = (arr) => {
+        return arr.sort(() => Math.random() - 0.5);
+      };
+      const any = (arr) => shuffle(arr)[0];
+
+      const random = (from = 0, to = 1) => from + Math.random() * (to - from);
+      const randomInt = (min = 0, max = 1) => Math.floor(random(min, max));
+
+      const range = (from, to, step = 1) => {
+        const length = Math.floor((to - from) / step) + 1;
+        return Array.from({ length }).map((_, i) => from + i * step);
+      };
+      const replace = (str) =>
+        str
+          .replace(/Õ/g, "6")
+          .replace(/Ä/g, "2")
+          .replace(/Ö/g, "8")
+          .replace(/Ü/g, "y")
+          .replace(/Š/g, "Sh")
+          .replace(/Ž/g, "Zh")
+          .replace(/õ/g, "6")
+          .replace(/ä/g, "2")
+          .replace(/ö/g, "8")
+          .replace(/ü/g, "y")
+          .replace(/š/g, "sh")
+          .replace(/ž/g, "zh");
+
+      const remap = (value, start1, stop1, start2, stop2) => {
+        return (
+          ((value - start1) / (stop1 - start1)) * (stop2 - start2) + start2
+        );
+      };
+      const data = reactive({
+        rotation: "-90 0 0",
+        zoom: 0,
+        maxZoom: 25,
+        message: "Hello",
+        items: [],
+      });
+      const channel = "amfr";
+      const url =
+        "https://data.elektron.art/api/messages?sort[0]=datetime%3Aasc&filters[type][$eq]=CHAT&filters[channel][$eq]=" +
+        channel;
+
+      const replaceValue = (value) => {
+        if (value.startsWith("/whisper")) {
+          return "Remember " + value.replace("/whisper", "");
+        }
+        if (value.startsWith("/imagine")) {
+          return "Remember " + value.replace("/imagine", "");
+        }
+        return null;
+      };
+
+      const randomValues = () => {
+        return {
+          angle: random(-180, 180),
+          distance: random(-4, -5),
+          tilt: random(-1, 1),
+          height: random(0, 30),
+        };
+      };
+
+      fetch(url)
+        .then((res) => res.json())
+        .then(({ data: historicData }) => {
+          data.items = historicData.map(({ attributes: d }) => ({
+            value: replaceValue(d.value),
+            ...randomValues(),
+          }));
+        });
+
+      createApp({ data, fn: { random, replace, remap } }).mount();
+
+      const socket = new WebSocket("wss://data.elektron.art");
+      socket.addEventListener("message", (event) => {
+        const message = JSON.parse(event.data);
+        if (message.channel == "amfr") {
+          const value = replaceValue(message.value);
+          if (value) {
+            const item = {
+              value,
+              ...randomValues(),
+            };
+            data.items.push(item);
+          }
+        }
+      });
+    </script>
+  </head>
+
+  <body style="margin: 0; overflow: hidden">
+    <a-scene
+      vr-mode-ui="enabled: false"
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false;"
+    >
+      <a-assets>
+        <a-asset-item
+          id="optimerBoldFont"
+          src="https://rawgit.com/mrdoob/three.js/dev/examples/fonts/optimer_bold.typeface.json"
+        ></a-asset-item>
+      </a-assets>
+      <a-light type="point" color="white" position="0 0 0"></a-light>
+      <a-entity
+        :position="{x: 0, y: data.zoom * -1, z: 0}"
+        :rotation="data.rotation"
+      >
+        <a-entity
+          v-for="item,i in data.items"
+          :rotation="{x: 0, y: item.angle * 100, z: 0 }"
+        >
+          <a-entity
+            :position="{x: 0, y: item.height, z: i === (data.items.length - 1) ? -6 : item.distance }"
+          >
+            <a-entity
+              :position="{x: 1.75,y: 0.7,z: 1}"
+              :text="{opacity: fn.remap(i,0,data.items.length -1, 0.9,0.9), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: fn.replace(item.value)}"
+            >
+            </a-entity>
+          </a-entity>
+        </a-entity>
+      </a-entity>
+    </a-scene>
+    <input
+      type="text"
+      v-model="data.rotation"
+      style="
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        padding: 10px;
+        font-family: monospace;
+      "
+    />
+    <input
+      type="range"
+      v-model="data.zoom"
+      :max="data.maxZoom"
+      step="any"
+      style="
+        position: fixed;
+        top: 30px;
+        right: 30px;
+        display: block;
+        rotate: -90deg;
+        transform-origin: 0 0;
+        translate: 350px 350px;
+        width: 350px;
+      "
+    />
+  </body>
+
+  <style>
+    body {
+      color: white;
+      font-family: sans-serif;
+    }
+    input[type="range"] {
+      display: block;
+      -webkit-appearance: none;
+      background-color: rgba(255, 255, 255, 0.7);
+      height: 1px;
+      position: relative;
+      outline: none;
+      width: 100%;
+      margin: 16px 0;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      background-color: rgba(255, 255, 255, 0.7);
+      height: 32px;
+      width: 32px;
+      border-radius: 1000px;
+      background: white;
+      cursor: pointer;
+    }
+  </style>
+</html>
