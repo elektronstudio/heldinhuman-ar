@@ -78,7 +78,7 @@
         );
       };
       const data = reactive({
-        rotation: "-90 0 0",
+        rotation: "0 0 0",
         zoom: 0,
         maxZoom: 100,
         message: "Hello",
@@ -102,7 +102,7 @@
       const randomValues = () => {
         return {
           yAngle: random(-180, 180),
-          zPosition: random(-6, -8),
+          zPosition: random(-6, -10),
         };
       };
 
@@ -148,7 +148,7 @@
       </a-assets>
       <a-light type="point" color="white" position="0 0 0"></a-light>
       <a-entity
-        :position="{x: 0, z: data.zoom * 1 - 10, y: 0}"
+        :position="{x: 0, y: data.zoom * -1, z: 0}"
         :rotation="data.rotation"
       >
         <a-entity
@@ -179,7 +179,7 @@
     <input
       type="range"
       v-model="data.zoom"
-      :max="data.maxZoom"
+      :max="data.items.length / 5"
       step="any"
       style="
         position: fixed;
