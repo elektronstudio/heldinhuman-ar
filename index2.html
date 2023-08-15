@@ -10,7 +10,7 @@
     <script src="https://unpkg.com/reconnecting-websocket@4.4.0/dist/reconnecting-websocket-iife.min.js"></script>
     <script src="https://unpkg.com/aframe-text-geometry-component@0.5.1/dist/aframe-text-geometry-component.min.js"></script>
     <script src="https://unpkg.com/aframe-curve-component/dist/aframe-curve-component.min.js"></script>
-    <script src="https://unpkg.com/aframe-html-shader@0.2.0/dist/aframe-html-shader.min.js"></script>
+    <script src="https://unpkg.com/aframe-sprite-particles-component@^0.5.4/aframe-sprite-particles-component.js"></script>
 
     <script type="module">
       import { createApp, reactive } from "https://unpkg.com/petite-vue?module";
@@ -32,46 +32,80 @@
         const length = Math.floor((to - from) / step) + 1;
         return Array.from({ length }).map((_, i) => from + i * step);
       };
-
-      const m =
-        "The bräd narrative  of Hitchhiker  föllows the misõdventures  of the löst surviving  man, Arthur Dent,  following the demolition  of the Earth  by a Vogon constructor  fleet to make  way for a hyperspace  bypass. Dent is  rescued from Earth's  destruction by Ford  Prefect—a human-like  alien writer  for the eccentric,  electronic travel  guide The Hitchhiker's  Guide to the Galaxy—by  hitchhiking onto  a passing Vogon  spacecraft. Following  his rescue, Dent  explores the galaxy  with Prefect and  encounters Trillian,  another human  who had been taken  from Earth (before  its destruction)  by the two-headed  President of the Galaxy  Zaphod Beeblebrox  and the depressed Marvin,  the Paranoid Android.  Certain narrative  details were changed  among the various  adaptations.".split(
-          "  "
-        );
-
       const replace = (str) =>
         str
           .replace(/Õ/g, "6")
           .replace(/Ä/g, "2")
           .replace(/Ö/g, "8")
           .replace(/Ü/g, "y")
+          .replace(/Š/g, "Sh")
+          .replace(/Ž/g, "Zh")
           .replace(/õ/g, "6")
           .replace(/ä/g, "2")
           .replace(/ö/g, "8")
-          .replace(/ü/g, "y");
+          .replace(/ü/g, "y")
+          .replace(/š/g, "sh")
+          .replace(/ž/g, "zh");
 
-      const data = reactive({ z: -10, message: "Hello", items: [], m });
-      data.items = Array.from({ length: 4 }).map((_) => ({
-        angle: random(-80, 80),
-        distance: random(-5, -15),
-        tilt: random(-10, 10),
-      }));
+      const remap = (value, start1, stop1, start2, stop2) => {
+        return (
+          ((value - start1) / (stop1 - start1)) * (stop2 - start2) + start2
+        );
+      };
+      //const particles =
+      ("spawnRate: 1; lifeTime: 30; trailLifeTime: 10; velocity: -0.5 1 0..0.5 1 0; acceleration: 0 -0.5 0; trailInterval: 0.03; opacity: 0.5; color: white; scale: 1,0.5; texture: #blob;");
+      const particles =
+        "trailInterval: 0.03; trailLifeTime: 10; seed: 0.5; radialType: sphere; radialPosition: 1; orbitalVelocity: 20; lifeTime: 4..6; spawnRate: 10; texture: #blob; color: yellow, white; opacity: 1,0; particleSize: 50;";
+      const data = reactive({
+        particles,
+        zoom: 0,
+        maxZoom: 25,
+        message: "Hello",
+        items: [],
+      });
+      const channel = "amfr";
+      const url =
+        "https://data.elektron.art/api/messages?sort[0]=datetime%3Aasc&filters[type][$eq]=CHAT&filters[channel][$eq]=" +
+        channel;
 
-      createApp({ data, fn: { random, replace } }).mount();
+      const replaceValue = (value) => {
+        if (value.startsWith("/whisper")) {
+          return "Remember " + value.replace("/whisper", "");
+        }
+        if (value.startsWith("/imagine")) {
+          return "Remember " + value.replace("/imagine", "");
+        }
+        return null;
+      };
+
+      fetch(url)
+        .then((res) => res.json())
+        .then(({ data: historicData }) => {
+          data.items = historicData.map(({ attributes: d }) => ({
+            value: replaceValue(d.value),
+            angle: random(-180, 180),
+            distance: random(-4, -5),
+            tilt: random(-1, 1),
+            height: random(0, 30),
+          }));
+        });
+
+      createApp({ data, fn: { random, replace, remap } }).mount();
 
       const socket = new WebSocket("wss://data.elektron.art");
       socket.addEventListener("message", (event) => {
         const message = JSON.parse(event.data);
-        if (
-          message.channel == "amfr" &&
-          message.value.startsWith("/remember")
-        ) {
-          const item = {
-            value: message.value.replace("/remember", ""),
-            angle: random(0, 36),
-            distance: random(-5, -15),
-            tilt: random(-1, 1),
-          };
-          data.items.push(item);
+        if (message.channel == "amfr") {
+          const value = replaceValue(message.value);
+          if (value) {
+            const item = {
+              value,
+              angle: random(0, 36),
+              distance: random(-5, -15),
+              tilt: random(-1, 10),
+            };
+            data.items.push(item);
+          }
         }
       });
     </script>
@@ -88,74 +122,59 @@
           id="optimerBoldFont"
           src="https://rawgit.com/mrdoob/three.js/dev/examples/fonts/optimer_bold.typeface.json"
         ></a-asset-item>
+        <img id="blob" src="blob.png" />
       </a-assets>
       <a-light type="point" color="white" position="0 0 0"></a-light>
-      <a-curve id="track1">
-        <a-curve-point
-          v-for="i in 20"
-          :position="{x: fn.random(-3,3),y: fn.random(-3,3),z: fn.random(-3,3)}"
-        ></a-curve-point>
-      </a-curve>
-      <!-- <a-entity :position="{x: -1, y: 2, z: -15}">
-        <a-draw-curve
-          curveref="#track1"
-          material="shader: line; color: red;"
-        ></a-draw-curve>
-      </a-entity> -->
-      <!-- <a-entity
-        :text-geometry="{value: 'Please\nremember\nme'}"
-        :position="{x: -1, y: 2, z: -15}"
-        :rotation="{x: 0, y: -30, z: 0}"
-        scale="3 3 3"
-        material="color: white"
-      ></a-entity> -->
-      <a-entity v-for="item,i in 10" :rotation="{x: 0, y: 0, z: 0 }">
-        <a-entity :position="{x: (i - 5) * 1.5, y: 1.5, z: fn.random(-12,-8) }">
-          <a-plane
-            height="2"
-            :material="{shader: 'html', target: '#htmlElement' + i}"
-          ></a-plane>
-
-          <!-- <a-entity
-            material="color: black; opacity: 0.5;"
-            geometry="primitive: box; depth: 0.1; width: 2; height: 2"
-            position="0 0 0"
-            opacity="0.5"
-          >
-          </a-entity> -->
-          <!-- <a-entity
-            position="1.75 0.7 1"
-            :text="{anchor: 'left', baseline: 'top', width: 3, lineHeight: 50, color: 'white', value: fn.replace(data.m.slice(0,i + 1).join('\n'))}"
-          >
-          </a-entity> -->
-        </a-entity>
+      <a-entity position="0 0 -8" rotation="90 0 0">
+        <a-entity <a-entity :sprite-particles="data.particles"></a-entity>
       </a-entity>
     </a-scene>
-    <div
-      v-for="i in 10"
-      :id="'htmlElement' + i"
+    <input
+      type="text"
+      v-model="data.particles"
+      style="position: fixed; top: 10px; left: 10px; right: 10px; padding: 10px"
+    />
+    <input
+      type="range"
+      v-model="data.zoom"
+      :max="data.maxZoom"
+      step="any"
       style="
-        width: 800px;
-        height: 1600px;
         position: fixed;
-        left: 0;
-        top: 0;
-        overflow: hidden;
-        z-index: -100;
+        top: 30px;
+        right: 30px;
+        display: block;
+        rotate: -90deg;
+        transform-origin: 0 0;
+        translate: 350px 350px;
+        width: 350px;
       "
-    >
-      <div style="font-size: 100px">
-        {{ i }} Ma tõesti ei tea, mida siia kirjutada. Je ne sais pas quoi
-        écrire ici, vraiment, Я даже не знаю, что тут написать, правда
-        ここに何を書けばいいのか全く分かりません、本当に
-      </div>
-    </div>
+    />
   </body>
 
   <style>
     body {
       color: white;
       font-family: sans-serif;
+    }
+    input[type="range"] {
+      display: block;
+      -webkit-appearance: none;
+      background-color: rgba(255, 255, 255, 0.7);
+      height: 1px;
+      position: relative;
+      outline: none;
+      width: 100%;
+      margin: 16px 0;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      background-color: rgba(255, 255, 255, 0.7);
+      height: 32px;
+      width: 32px;
+      border-radius: 1000px;
+      background: white;
+      cursor: pointer;
     }
   </style>
 </html>
