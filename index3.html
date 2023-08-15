@@ -180,7 +180,7 @@
           >
             <a-entity
               :position="{x: 1.75,y: 0.7,z: 1}"
-              :text="{opacity: 0.9, width: 5, lineHeight: 50, color: 'white', value: item.index + ' ' + fn.replace(item.value)}"
+              :text="{opacity: 0.9, width: 5, lineHeight: 50, color: 'white', value: fn.replace(item.value)}"
             >
             </a-entity>
           </a-entity>
@@ -226,7 +226,7 @@
         </svg>
       </div>
     </div>
-    <input
+    <!-- <input
       type="text"
       v-model="data.rotation"
       style="
@@ -236,7 +236,7 @@
         padding: 10px;
         font-family: monospace;
       "
-    />
+    /> -->
     <input
       type="range"
       v-model="data.zoom"
