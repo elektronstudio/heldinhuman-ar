@@ -25,6 +25,17 @@
         background: white;
         cursor: pointer;
       }
+      @keyframes bounce {
+        0%,
+        50% {
+          transform: translateY(-10%);
+          animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+        }
+        100% {
+          transform: translateY(0);
+          animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+        }
+      }
     </style>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -78,6 +89,7 @@
         );
       };
       const data = reactive({
+        showNew: false,
         rotation: "0 0 0",
         zoom: 0,
         maxZoom: 100,
@@ -112,8 +124,9 @@
       fetch(url)
         .then((res) => res.json())
         .then(({ data: historicData }) => {
-          data.items = historicData.map(({ attributes: d }) => ({
+          data.items = historicData.map(({ attributes: d }, index) => ({
             value: replaceValue(d.value),
+            index,
             ...randomValues(),
           }));
         });
@@ -125,13 +138,16 @@
         const message = JSON.parse(event.data);
         if (message.channel == "amfr") {
           const value = replaceValue(message.value);
-          data.latestMessage = value;
           if (value) {
+            data.latestMessage = value;
             const item = {
               value,
+              index: data.items.length++,
               ...randomValues(),
             };
             data.items.push(item);
+            data.showNew = true;
+            setTimeout(() => (data.showNew = false), 5000);
           }
         }
       });
@@ -156,20 +172,22 @@
         :rotation="data.rotation"
       >
         <a-entity
-          v-for="item,i in data.items.reverse()"
+          v-for="item,i in data.items"
           :rotation="{x: 0, y: item.yAngle, z: 0 }"
         >
-          <a-entity :position="{x: 0, y: i / 10, z: item.zPosition }">
+          <a-entity
+            :position="{x: 0, y: (data.items.length - item.index) / 10, z: item.zPosition }"
+          >
             <a-entity
               :position="{x: 1.75,y: 0.7,z: 1}"
-              :text="{opacity: fn.remap(i,0,data.items.length -1, 0.9,0.9), width: 5, lineHeight: 50, color: i === (data.items.length - 1) ? 'yellow' : 'white', value: fn.replace(item.value)}"
+              :text="{opacity: 0.9, width: 5, lineHeight: 50, color: 'white', value: item.index + ' ' + fn.replace(item.value)}"
             >
             </a-entity>
           </a-entity>
         </a-entity>
         <a-entity
           :rotation="{x: -90, y: 0, z: 0 }"
-          :position="{x: 0, y: -4, z: 0 }"
+          :position="{x: 0, y: -2, z: 0 }"
         >
           <a-entity
             :position="{x: 1.75,y: 0.7,z: 1}"
@@ -179,6 +197,35 @@
         </a-entity>
       </a-entity>
     </a-scene>
+    <div
+      style="
+        pointer-events: none;
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        transition: all 1s;
+      "
+      :style="{opacity: data.showNew ? 1 : 0}"
+    >
+      <div>
+        <svg
+          width="32px"
+          height="32px"
+          stroke-width="1.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style="transform: rotate(90deg)"
+        >
+          <path
+            d="M6 12h12.5m0 0l-6-6m6 6l-6 6"
+            stroke="yellow"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></path>
+        </svg>
+      </div>
+    </div>
     <input
       type="text"
       v-model="data.rotation"
