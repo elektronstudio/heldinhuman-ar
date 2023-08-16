@@ -102,16 +102,19 @@
         channel;
 
       const replaceValue = (value) => {
+        if (value.startsWith("/remember")) {
+          return "Remember " + value.replace("/remember", "");
+        }
         if (value.startsWith("/whisper")) {
-          return "Remember " + value.replace("/whisper", "");
+          return "Whisper " + value.replace("/whisper", "");
         }
         if (value.startsWith("/imagine")) {
-          return "Remember " + value.replace("/imagine", "");
+          return "Imagine " + value.replace("/imagine", "");
         }
         if (value.startsWith("/q")) {
           return null;
         }
-        return value.replace("/remember", "");
+        return null;
       };
 
       const randomValues = () => {
