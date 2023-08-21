@@ -132,7 +132,8 @@
             index,
             ...randomValues(),
           }));
-          data.latestMessage = data.items.at(0)?.value;
+          data.latestMessage = data.items.slice(-1)[0]?.value;
+          console.log(data.items);
         });
 
       createApp({ data, fn: { random, replace, remap } }).mount();
