@@ -93,7 +93,7 @@
         rotation: "0 0 0",
         zoom: 0,
         maxZoom: 100,
-        latestMessage: "...",
+        latestMessage: "",
         items: [],
       });
       const channel = "amfr";
@@ -132,6 +132,7 @@
             index,
             ...randomValues(),
           }));
+          data.latestMessage = data.items.at(0)?.value;
         });
 
       createApp({ data, fn: { random, replace, remap } }).mount();
