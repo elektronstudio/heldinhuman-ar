@@ -97,9 +97,10 @@
         latestMessage: "",
         items: [],
       });
+
       const channel = "amfr";
       const url =
-        "https://data.elektron.art/api/messages?sort[0]=datetime%3Aasc&filters[type][$eq]=CHAT&filters[channel][$eq]=" +
+        "https://data.elektron.art/api/messages?pagination[limit]=-1&pagination[start]=0&sort[0]=datetime%3Aasc&filters[type][$eq]=CHAT&filters[channel][$eq]=" +
         channel;
 
       const replaceValue = (value) => {
@@ -134,7 +135,7 @@
             ...randomValues(),
           }));
           data.latestMessage = data.items.slice(-1)[0]?.value;
-          console.log(data.items);
+          console.log(historicData.length);
         });
 
       createApp({ data, fn: { random, replace, remap } }).mount();
